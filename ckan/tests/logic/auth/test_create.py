@@ -296,7 +296,10 @@ class TestCreateResources(object):
 
         user = factories.User()
 
-        dataset = factories.Dataset(user=user)
+        # dataset must have org in which user is allowed to add pkg
+        organization = factories.Organization(user=user)
+        dataset = factories.Dataset(user=user,
+                                    owner_org=organization['id'])
 
         resource = {'package_id': dataset['id'],
                     'title': 'Resource',

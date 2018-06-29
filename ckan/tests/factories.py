@@ -250,6 +250,7 @@ class Group(factory.Factory):
     name = factory.Sequence(lambda n: 'test_group_{0:02d}'.format(n))
     title = factory.LazyAttribute(_generate_group_title)
     description = 'A test description for this test group.'
+    type_of_group = 'projects'
 
     user = factory.LazyAttribute(lambda _:
                                  helpers.call_action('get_site_user'))
@@ -314,8 +315,21 @@ class Dataset(factory.Factory):
     FACTORY_FOR = ckan.model.Package
 
     # These are the default params that will be used to create new groups.
+    # added additional required fields from scheming
     title = 'Test Dataset'
     notes = 'Just another test dataset.'
+    issued = '2018-01-01T12:00:00.000000'
+    temporal_start = '2018-06-01T12:00:00'
+    temporal_end = '2019-06-01T12:00:00'
+    maintainer = 'Test User1'
+    maintainer_email = 'test1@email.com'
+    author = 'Test User2'
+    author_email = 'test2@email.com'
+    license_id = 'cc-by'
+    created = '2018-01-01T12:00:00.000000'
+    modified = '2018-01-01T12:00:00.000000'
+
+    owner_org = factory.LazyAttribute(lambda _: Organization()['id'])
 
     # Generate a different group name param for each user that gets created.
     name = factory.Sequence(lambda n: 'test_dataset_{0:02d}'.format(n))

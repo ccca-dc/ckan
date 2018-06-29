@@ -34,7 +34,8 @@ class TestGroupController(helpers.FunctionalTestBase):
         assert orgs[-1]['name'] in response
         assert orgs[0]['name'] not in response
 
-        response2 = response.click('2')
+        # index must be -1 as several objects are found
+        response2 = response.click('2', index=-1)
         assert orgs[-1]['name'] not in response2
         assert orgs[0]['name'] in response2
 
@@ -273,7 +274,7 @@ class TestGroupMembership(helpers.FunctionalTestBase):
             users = []
         context = {'user': owner_username, 'ignore_auth': True, }
         group = helpers.call_action('group_create', context=context,
-                                    name='test-group', users=users)
+                                    name='test-group', users=users, type_of_group='projects')
         return group
 
     def _get_group_add_member_page(self, app, user, group_name):

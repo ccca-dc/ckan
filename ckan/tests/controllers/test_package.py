@@ -814,7 +814,11 @@ class TestResourceNew(helpers.FunctionalTestBase):
 
     def test_add_new_resource_with_link_and_download(self):
         user = factories.User()
-        dataset = factories.Dataset()
+        # org must be added in order to be able to delete pkg
+        organization = factories.Organization(user=user)
+        dataset = factories.Dataset(owner_org=organization['id'])
+        #dataset = factories.Dataset()
+
         env = {'REMOTE_USER': user['name'].encode('ascii')}
         app = helpers._get_test_app()
 
@@ -849,7 +853,9 @@ class TestResourceNew(helpers.FunctionalTestBase):
         organization = factories.Organization(
             users=[{'name': user['id'], 'capacity': 'editor'}]
         )
+        # dataset must be created from user in order to delete it
         dataset = factories.Dataset(
+            user=user,
             owner_org=organization['id'],
         )
         env = {'REMOTE_USER': user['name'].encode('ascii')}

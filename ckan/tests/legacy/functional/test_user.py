@@ -86,10 +86,10 @@ class TestUserController(FunctionalTestCase, HtmlCheckMethods, PylonsTestCase, S
         return cookie_headers
 
     def test_apikey(self):
-        username= u'okfntest'
+        username = u'okfntest'
         user = model.User.by_name(u'okfntest')
         if not user:
-            user = model.User(name=u'okfntest')
+            user = model.User(name=u'okfntest', email='user@email.com')
             model.Session.add(user)
             model.Session.commit()
             model.Session.remove()
