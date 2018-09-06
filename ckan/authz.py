@@ -351,7 +351,14 @@ def get_user_id_for_username(user_name, allow_none=False):
     except TypeError:
         # c is not available
         pass
-    user = model.User.get(user_name)
+    # GAS 2018-09-03
+    #user = model.User.get(user_name)
+    if user_name != None:
+        user = model.User.get(user_name)
+    else:
+        user = None
+
+    # user = model.User.get(user_name, None)
     if user:
         return user.id
     if allow_none:

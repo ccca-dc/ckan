@@ -159,6 +159,14 @@ def reset():
             else:
                 value = default
 
+        # Bug fix; because this method is entirely krass ...
+        # Anja, 2.3.18
+        if key == 'ckan.main_css':
+            if config_value:
+                value = config_value
+            else:
+                value = default
+
         set_app_global(key, value)
 
         # update the config
