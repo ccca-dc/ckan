@@ -196,3 +196,77 @@ def verify_reset_link(user, key):
     if not user.reset_key or len(user.reset_key) < 5:
         return False
     return key.strip() == user.reset_key
+
+
+#################################################################
+# Anja 24.9.2018 - Automatic Registration with Email Verification
+# Copied and modified from "Reset Password"
+
+def create_confirm_key(user):
+    user.confirm_key = unicode(make_key())
+    model.repo.commit_and_remove()
+
+def get_confirm_link_body(user):
+    extra_vars = {
+        'reset_link': get_confirm_link(user),
+        'site_title': config.get('ckan.site_title'),
+        'site_url': config.get('ckan.site_url'),
+        'user_name': user.name,
+        }
+    # NOTE: This template is translated
+    return render_jinja2('emails/reset_password.txt', extra_vars)
+
+def get_confirm_link(user):
+    return h.url_for(controller='user',
+                     action='confirm_mailadress',
+                     id=user.id,
+                     key=user.confirm_key,
+                     qualified=True)
+
+def get_confirm_verification_link_body(user):
+    extra_vars = {
+        'confirm_link': get_confirm_link(user),
+        'site_title': config.get('ckan.site_title'),
+        'site_url': config.get('ckan.site_url'),
+        'user_name': user.name,
+        }
+    # NOTE: This template is translated
+    return render_jinja2('emails/reset_password.txt', extra_vars)
+
+
+def send_confirm_verification_link(user):
+    create_confirm_key(user)
+    body = get_confirm_verification_link_body(user)
+    extra_vars = {
+        'site_title': config.get('ckan.site_title')
+    }
+    subject = render_jinja2('emails/reset_password_subject.txt', extra_vars)
+
+    # Make sure we only use the first line
+    subject = subject.split('\n')[0]
+
+    mail_user(user, subject, body)
+
+def send_confirm_link(user):
+    create_confirm_key(user)
+    body = get_confirm_link_body(user)
+    extra_vars = {
+        'site_title': config.get('ckan.site_title')
+    }
+    subject = render_jinja2('emails/reset_password_subject.txt', extra_vars)
+
+    # Make sure we only use the first line
+    subject = subject.split('\n')[0]
+
+    mail_user(user, subject, body)
+
+
+def verify_confirm_link(user, key):
+    if not key:
+        return False
+    if not user.confirm_key or len(user.confirm_key) < 5:
+        return False
+    return key.strip() == user.confirm_key
+
+#Anja 24.9.2018 - Automatic Registration with Email Verification - END
+#######################################################################

@@ -534,7 +534,7 @@ class UserController(base.BaseController):
                 user_dict['reset_key'] = c.reset_key
                 user_dict['state'] = model.State.ACTIVE
                 user = get_action('user_update')(context, user_dict)
-                mailer.create_reset_key(user_obj)
+                mailer.create_reset_key(user_obj) # Anja:  make the old link invalid
 
                 h.flash_success(_("Your password has been reset."))
                 h.redirect_to('/')
