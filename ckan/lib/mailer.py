@@ -202,12 +202,12 @@ def verify_reset_link(user, key):
 # Copied and modified from "Reset Password"
 
 def create_confirm_key(user):
-    user.confirm_key = unicode(make_key())
+    user.reset_key = unicode(make_key())
     model.repo.commit_and_remove()
 
 def get_confirm_link_body(user):
     extra_vars = {
-        'reset_link': get_confirm_link(user),
+        'confirm_link': get_confirm_link(user),
         'site_title': config.get('ckan.site_title'),
         'site_url': config.get('ckan.site_url'),
         'user_name': user.name,
@@ -216,11 +216,16 @@ def get_confirm_link_body(user):
     return render_jinja2('emails/confirm_mailaddress.txt', extra_vars)
 
 def get_confirm_link(user):
-    return h.url_for(controller='user',
-                     action='confirm_mailadress',
-                     id=user.id,
-                     key=user.confirm_key,
-                     qualified=True)
+
+    c_url =  config.get('ckan.site_url') + '/confirm_mail/' + user.id + '?key=' + user.reset_key
+
+    return c_url
+    # THIS does not work
+    # return h.url_for(controller='user',
+    #                  action='confirm_mail',
+    #                  id=user.id,
+    #                  key=user.reset_key,
+    #                  qualified=True)
 
 def get_confirm_verification_link_body(user):
     extra_vars = {
@@ -263,9 +268,9 @@ def send_confirm_link(user):
 def verify_confirm_link(user, key):
     if not key:
         return False
-    if not user.confirm_key or len(user.confirm_key) < 5:
+    if not user.reset_key or len(user.reset_key) < 5:
         return False
-    return key.strip() == user.confirm_key
+    return key.strip() == user.reset_key
 
 #Anja 24.9.2018 - Automatic Registration with Email Verification - END
 #######################################################################
