@@ -197,7 +197,6 @@ def verify_reset_link(user, key):
         return False
     return key.strip() == user.reset_key
 
-
 #################################################################
 # Anja 24.9.2018 - Automatic Registration with Email Verification
 # Copied and modified from "Reset Password"
@@ -214,7 +213,7 @@ def get_confirm_link_body(user):
         'user_name': user.name,
         }
     # NOTE: This template is translated
-    return render_jinja2('emails/reset_password.txt', extra_vars)
+    return render_jinja2('emails/confirm_mailaddress.txt', extra_vars)
 
 def get_confirm_link(user):
     return h.url_for(controller='user',
@@ -231,7 +230,7 @@ def get_confirm_verification_link_body(user):
         'user_name': user.name,
         }
     # NOTE: This template is translated
-    return render_jinja2('emails/reset_password.txt', extra_vars)
+    return render_jinja2('emails/confirm_mailaddress.txt', extra_vars)
 
 
 def send_confirm_verification_link(user):
@@ -240,7 +239,7 @@ def send_confirm_verification_link(user):
     extra_vars = {
         'site_title': config.get('ckan.site_title')
     }
-    subject = render_jinja2('emails/reset_password_subject.txt', extra_vars)
+    subject = render_jinja2('emails/confirm_mailaddress_subject.txt', extra_vars)
 
     # Make sure we only use the first line
     subject = subject.split('\n')[0]
@@ -253,7 +252,7 @@ def send_confirm_link(user):
     extra_vars = {
         'site_title': config.get('ckan.site_title')
     }
-    subject = render_jinja2('emails/reset_password_subject.txt', extra_vars)
+    subject = render_jinja2('emails/confirm_mailaddress_subject.txt', extra_vars)
 
     # Make sure we only use the first line
     subject = subject.split('\n')[0]
