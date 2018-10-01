@@ -491,7 +491,12 @@ class UserController(base.BaseController):
                 else:
                     h.flash_error(_('No such user: %s') % id)
 
-            if user_obj:
+            # ANJA: 1.10.2018 check if user was confirmed
+            print user_dict
+            if user_dict['state'] == 'waiting':
+                h.flash_error(_('Your email address was not confirmed yet. Please check your inbox and confirm your mail address before resetting your password'))
+
+            elif user_obj:
                 try:
                     mailer.send_reset_link(user_obj)
                     h.flash_success(_('Please check your inbox for '
