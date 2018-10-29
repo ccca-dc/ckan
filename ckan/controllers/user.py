@@ -452,7 +452,11 @@ class UserController(base.BaseController):
     def request_reset(self):
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'auth_user_obj': c.userobj}
-        data_dict = {'id': request.params.get('user')}
+        if request.params.get('user'):
+            data_dict = {'id': request.params.get('user').lower()}
+        else:
+            data_dict = {'id': request.params.get('user')}
+
         try:
             check_access('request_reset', context)
         except NotAuthorized:
@@ -460,40 +464,22 @@ class UserController(base.BaseController):
 
         if request.method == 'POST':
             id = request.params.get('user')
-
+            if id:
+                id = id.lower()
             context = {'model': model,
                        'user': c.user}
 
             data_dict = {'id': id}
             user_obj = None
+            user_dict = None
             try:
                 user_dict = get_action('user_show')(context, data_dict)
                 user_obj = context['user_obj']
             except NotFound:
-                # Try searching the user
-                del data_dict['id']
-                data_dict['q'] = id
-
-                if id and len(id) > 2:
-                    user_list = get_action('user_list')(context, data_dict)
-                    if len(user_list) == 1:
-                        # This is ugly, but we need the user object for the
-                        # mailer,
-                        # and user_list does not return them
-                        del data_dict['q']
-                        data_dict['id'] = user_list[0]['id']
-                        user_dict = get_action('user_show')(context, data_dict)
-                        user_obj = context['user_obj']
-                    elif len(user_list) > 1:
-                        h.flash_error(_('"%s" matched several users') % (id))
-                    else:
-                        h.flash_error(_('No such user: %s') % id)
-                else:
-                    h.flash_error(_('No such user: %s') % id)
+                h.flash_error(_('No such user: %s') % id)
 
             # ANJA: 1.10.2018 check if user was confirmed
-            print user_dict
-            if user_dict['state'] == 'waiting':
+            if user_dict and user_dict['state'] == 'waiting':
                 h.flash_error(_('Your email address was not confirmed yet. Please check your inbox and confirm your mail address before resetting your password'))
 
             elif user_obj:
